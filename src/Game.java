@@ -18,6 +18,9 @@ public class Game {
         dealer.deal(players);
         System.out.println(players.get(0).getName() + ": " + players.get(0).getHand());
         System.out.println(players.get(1).getName() + ": " + players.get(1).getHand());
+        System.out.println(players.get(2).getName() + ": " + players.get(2).getHand());
+        System.out.println(players.get(3).getName() + ": " + players.get(3).getHand());
+        System.out.println(players.get(4).getName() + ": " + players.get(4).getHand());
         dealer.flop();
         dealer.add();
         dealer.add();
@@ -27,6 +30,9 @@ public class Game {
     public void determineHand() {
         Player player1 = players.get(0);
         Player player2 = players.get(1);
+        Player player3 = players.get(2);
+        Player player4 = players.get(3);
+        Player player5 = players.get(4);
         ArrayList<Card> flop = dealer.getFlop();
         player1.setHighCard(true);
         Card[] flopArr = new Card[flop.size()];
@@ -153,6 +159,7 @@ public class Game {
 
                 if (seq == 5) {
                     player.setStraight(true);
+                    player.getTop()[4] = checkStraight[0];
                     player.setTrips(false);
                     player.setTwoPair(false);
                     player.setPair(false);
@@ -252,30 +259,73 @@ public class Game {
             //Print out hand
             if (player.isRoyalFlush()) {
                 player.setBestHand("Royal Flush");
+                player.setHandRank(9);
             } else if (player.isQuads()) {
                 player.setBestHand("Four of a Kind");
+                player.setHandRank(8);
             } else if (player.isStraightFlush()) {
                 player.setBestHand("Straight Flush");
+                player.setHandRank(7);
             } else if (player.isFullHouse()) {
                 player.setBestHand("Full House");
+                player.setHandRank(6);
             } else if (player.isFlush()) {
                 player.setBestHand("Flush");
+                player.setHandRank(5);
             } else if (player.isStraight()) {
                 player.setBestHand("Straight");
+                player.setHandRank(4);
             } else if (player.isTrips()) {
                 player.setBestHand("Three of a Kind");
+                player.setHandRank(3);
             } else if (player.isTwoPair()) {
                 player.setBestHand("Two Pairs");
+                player.setHandRank(2);
             } else if (player.isPair()) {
                 player.setBestHand("Pair");
+                player.setHandRank(1);
             } else {
                 player.setBestHand("High Card");
             }
+
+            //Compare hands to determine winner
+
         }
         System.out.println(player1.getName() + ": " + player1.getBestHand());
         System.out.println(player2.getName() + ": " + player2.getBestHand());
-            }
+        System.out.println(player3.getName() + ": " + player3.getBestHand());
+        System.out.println(player4.getName() + ": " + player4.getBestHand());
+        System.out.println(player5.getName() + ": " + player5.getBestHand());
+        determineWinner();
+    }
 
+
+
+    private void determineWinner() {
+        ArrayList<Player> playerRankings = new ArrayList<>(players.size());
+        for (int i = 9; i >= 0; i--) {
+            for (Player player : players) {
+                if (player.getHandRank() == i) {
+                    playerRankings.add(player);
+                }
+            }
+        }
+        int high = playerRankings.get(0).getHandRank();
+        //System.out.println(high);
+        for (Player player : players) {
+            if (player.getHandRank() != high) {
+                playerRankings.remove(player);
+            }
+        }
+
+//        for (Player player : playerRankings) {
+//            System.out.println(player.getName());
+//        }
+
+        if (playerRankings.size() == 1) {
+            System.out.println(playerRankings.get(0).getName() + " wins!");
+        }
+    }
 
     public static void main(String[] args) {
         Game game = new Game();

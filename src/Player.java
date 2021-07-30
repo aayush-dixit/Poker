@@ -17,9 +17,10 @@ public class Player {
     private boolean quads = false;
     private boolean royalFlush = false;
     private String bestHand = "High Card";
+    private int handRank = 0;
     private int high;
     private int low;
-    private ArrayList<Card> top = new ArrayList<>(5);
+    private Card[] top = new Card[10];
 
     public Player(String name, int buyin) {
         hand = new ArrayList<>(2);
@@ -173,11 +174,19 @@ public class Player {
         this.low = low;
     }
 
-    public Card getTop() {
+    public Card[] getTop() {
         return top;
     }
 
-    public void setTop(Card top) {
+    public void setTop(Card[] top) {
         this.top = top;
+    }
+
+    public int getHandRank() {
+        return handRank;
+    }
+
+    public void setHandRank(int handRank) {
+        this.handRank = handRank;
     }
 }
