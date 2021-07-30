@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Game {
     private static ArrayList<Player> players = new ArrayList<>();
@@ -59,17 +60,25 @@ public class Game {
                             continue;
                         } else {
                             if (tableP) {
-                                for (int v = d; v > b; v--) {
+                                for (int v = d - 1; v > b; v--) {
                                     if (flopArr[v] == flopArr[b]) {
                                         tableTrips = true;
+                                        player.getTop()[3] = flopArr[v];
                                         tableP = false;
                                     } else {
                                         tableTwoP = true;
+                                        player.getTop()[2] = flopArr[v];
+                                        if (player.getTop()[1].getRank() > player.getTop()[2].getRank()) {
+                                            Card temp = player.getTop()[2];
+                                            player.getTop()[2] = player.getTop()[1];
+                                            player.getTop()[1] = temp;
+                                        }
                                         tableP = false;
                                     }
                                 }
                             } else {
                                 tableP = true;
+                                player.getTop()[1] = flopArr[b];
                             }
                         }
                     }
@@ -85,31 +94,124 @@ public class Game {
                     Card check = flop.get(e);
                     if (first.getRank() == check.getRank()) {
                         firstP++;
+
                         if (firstP == 1) {
+                            if (tableTrips) {
+                                player.getTop()[2] = first;
+                            } else if (tableTwoP) {
+                                if (player.getTop()[2].getRank() < first.getRank()) {
+                                    player.getTop()[1] = player.getTop()[2];
+                                    player.getTop()[2] = first;
+                                    player.getTop()[6] = player.getTop()[3];
+                                } else if (player.getTop()[2].getRank() > first.getRank()
+                                && player.getTop()[1].getRank() < first.getRank()) {
+                                    player.getTop()[1] = first;
+                                    player.getTop()[6] = player.getTop()[3];
+                                }
+                            } else if (tableP) {
+                                if (player.getTop()[1].getRank() > first.getRank()) {
+                                    player.getTop()[2] = player.getTop()[1];
+                                    player.getTop()[1] = first;
+                                }
+                            } else {
+                                player.getTop()[1] = first;
+                            }
                             player.setPair(true);
+
                         } else if (firstP == 2) {
                             player.setTrips(true);
+                            player.getTop()[3] = first;
                             if (secondP >= 1 && second.getRank() != first.getRank()) {
                                 player.setFullHouse(true);
+                                if (firstP >= 1 && second.getRank() != first.getRank()) {
+                                    player.setFullHouse(true);
+                                    if (firstP > secondP) {
+                                        player.getTop()[6] = first;
+                                        player.getTop()[3] = first;
+                                        player.getTop()[1] = second;
+                                    } else if (firstP == secondP) {
+                                        if (first.getRank() >= second.getRank()) {
+                                            player.getTop()[6] = first;
+                                            if (first.getRank() != second.getRank()) {
+                                                player.getTop()[3] = first;
+                                                player.getTop()[1] = second;
+                                            }
+                                        }
+                                    } else {
+                                        player.getTop()[6] = second;
+                                        player.getTop()[3] = second;
+                                        player.getTop()[1] = first;
+                                    }
+                                }
                             }
                         } else if (firstP == 3) {
                             player.setQuads(true);
+                            player.getTop()[8] = first;
                         }
                     }
+
+
                     if (second.getRank() == check.getRank()) {
                         secondP++;
                         if (secondP == 1 && firstP != 1) {
+                            if (tableTrips) {
+                                player.getTop()[2] = second;
+                            } else if (tableTwoP) {
+                                if (player.getTop()[2].getRank() < second.getRank()) {
+                                    player.getTop()[1] = player.getTop()[2];
+                                    player.getTop()[2] = second;
+                                } else if (player.getTop()[2].getRank() > second.getRank()
+                                        && player.getTop()[1].getRank() < second.getRank()) {
+                                    player.getTop()[1] = second;
+                                }
+                            } else if (tableP) {
+                                if (player.getTop()[1].getRank() > second.getRank()) {
+                                    player.getTop()[2] = player.getTop()[1];
+                                    player.getTop()[1] = second;
+                                }
+                            } else {
+                                player.getTop()[1] = second;
+                            }
                             player.setPair(true);
                         }
+
                         if (secondP == 1 && firstP == 1 && first.getRank() != second.getRank()) {
                             player.setTwoPair(true);
+                            if (second.getRank() > first.getRank()) {
+                                player.getTop()[2] = second;
+                                player.getTop()[1] = first;
+                            } else {
+                                player.getTop()[1] = second;
+                                player.getTop()[2] = first;
+                            }
+
                         } else if (secondP == 2) {
                             player.setTrips(true);
+                            player.getTop()[3] = second;
+
                             if (firstP >= 1 && second.getRank() != first.getRank()) {
                                 player.setFullHouse(true);
+                                if (firstP > secondP) {
+                                    player.getTop()[6] = first;
+                                    player.getTop()[3] = first;
+                                    player.getTop()[1] = second;
+                                } else if (firstP == secondP) {
+                                    if (first.getRank() >= second.getRank()) {
+                                        player.getTop()[6] = first;
+                                        if (first.getRank() != second.getRank()) {
+                                            player.getTop()[3] = first;
+                                            player.getTop()[1] = second;
+                                        }
+                                    }
+                                } else {
+                                    player.getTop()[6] = second;
+                                    player.getTop()[3] = second;
+                                    player.getTop()[1] = first;
+                                }
                             }
                         } else if (secondP == 3){
                             player.setQuads(true);
+                            player.getTop()[8] = second;
                         }
                     }
                 }
@@ -119,8 +221,17 @@ public class Game {
                     player.setPair(true);
                     if (firstP == 1) {
                         player.setTrips(true);
+                        player.getTop()[3] = first;
                     } else if (firstP == 2) {
                         player.setQuads(true);
+                        player.getTop()[8] = first;
+                    } else if (player.getTop()[1] != null) {
+                        if (first.getRank() > player.getTop()[1].getRank()) {
+                            player.getTop()[2] = first;
+                        } else {
+                            player.getTop()[2] = player.getTop()[1];
+                            player.getTop()[1] = first;
+                        }
                     }
                 }
 
@@ -166,6 +277,8 @@ public class Game {
                 }
 
                 //Check for flush
+                Card[] flushOrder = new Card[7];
+                int count = 0;
                 int sameSuit1;
                 int sameSuit2 = 0;
                 int flopSuit = 1;
@@ -193,18 +306,83 @@ public class Game {
                     next++;
                 }
 
-                if (flopSuit == 5) {
+                if (flopSuit == 5 && (sameSuit1 < 5 || sameSuit2 < 5)) {
                     player.setFlush(true);
                     player.setStraight(false);
                     player.setTrips(false);
                     player.setTwoPair(false);
                     player.setPair(false);
-                } else if (sameSuit1 == 5 || sameSuit2 == 5) {
+                    //Order array with player hand
+                    for (Card c : flop) {
+                        flushOrder[count] = c;
+                        count++;
+                    }
+                    int length1 = flushOrder.length;
+                    for (int j = 0; j < length1 - 1; j++) {
+                        int min = j;
+                        for (int k = j + 1; k < length1; k++) {
+                            if (flushOrder[k].compareTo(flushOrder[k], flushOrder[min]) > 0) {
+                                min = k;
+                            }
+                        }
+                        Card temp = flushOrder[min];
+                        flushOrder[min] = flushOrder[j];
+                        flushOrder[j] = temp;
+                    }
+                    player.getTop()[5] = flushOrder[0];
+
+
+                } else if (sameSuit1 >= 5 || sameSuit2 == 5) {
                     player.setFlush(true);
                     player.setStraight(false);
                     player.setTrips(false);
                     player.setTwoPair(false);
                     player.setPair(false);
+                    if (sameSuit1 == sameSuit2) {
+                        for (Card c : flop) {
+                            if (c.getSuit() == first.getSuit()) {
+                                flushOrder[count] = c;
+                                count++;
+                            }
+                        }
+                        flushOrder[count] = first;
+                        flushOrder[count + 1] = second;
+
+                    } else if (sameSuit1 == 5) {
+                        for (Card c : flop) {
+                            if (c.getSuit() == first.getSuit()) {
+                                flushOrder[count] = c;
+                                count++;
+                            }
+                        }
+                        flushOrder[count] = first;
+                    } else {
+                        for (Card c : flop) {
+                            if (c.getSuit() == second.getSuit()) {
+                                flushOrder[count] = c;
+                                count++;
+                            }
+                        }
+                        flushOrder[count] = second;
+                    }
+
+                    int length1 = flushOrder.length;
+                    for (int j = 0; j < length1 - 1; j++) {
+                        int min = j;
+                        for (int k = j + 1; k < length1; k++) {
+                            try {
+                                if (flushOrder[k].compareTo(flushOrder[k], flushOrder[min]) > 0) {
+                                    min = k;
+                                }
+                            } catch (Exception e) {
+                                System.out.println("null error");
+                            }
+                        }
+                        Card temp = flushOrder[min];
+                        flushOrder[min] = flushOrder[j];
+                        flushOrder[j] = temp;
+                    }
+                    player.getTop()[5] = flushOrder[0];
                 }
 
                 //check for full house
@@ -254,6 +432,10 @@ public class Game {
                 player.setTwoPair(true);
             } else if (player.isHighCard() && tableP) {
                 player.setPair(true);
+            }
+
+            if (player.isFullHouse()) {
+                player.getTop()[6] = player.getTop()[3];
             }
 
             //Print out hand
@@ -324,6 +506,20 @@ public class Game {
 
         if (playerRankings.size() == 1) {
             System.out.println(playerRankings.get(0).getName() + " wins!");
+        } else {
+            Player currWinner = playerRankings.get(0);
+           // for (Player player : playerRankings)
+                //if (player.getTop()[high].getRank() > currWinner.getTop()[high].getRank()) {
+                 //   currWinner = player;
+                //}
+           // System.out.println(currWinner.getName() + " wins!");
+        }
+        for (Player player : playerRankings) {
+            try {
+                System.out.println(Arrays.toString(player.getTop()));
+            } catch (Exception e) {
+                System.out.println("error");
+            }
         }
     }
 
