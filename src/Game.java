@@ -36,22 +36,43 @@ public class Game {
             a++;
         }
 
-        boolean tableP = false;
-        for (int b = 0; b < flopArr.length - 1; b++) {
-                for (int d = 1; d < flopArr.length; d++) {
-                    if (flopArr[d] == flopArr[b]) {
-                       tableP = true;
-                    }
-                    d++;
-                }
-                b++;
-        }
-
         for (Player player : players) {
             Card first = player.getHand().get(0);
             Card second = player.getHand().get(1);
+
+            //Check if table flop has a pair
+            boolean tableP = false;
+            boolean tableTwoP = false;
+            boolean tableTrips = false;
+            for (int b = 0; b < flopArr.length - 1; b++) {
+                for (int d = b + 1; d < flopArr.length; d++) {
+                    if (flopArr[b].getRank() == flopArr[d].getRank()) {
+                        //System.out.println(flopArr[b] + " + " + flopArr[d]);
+                        if (flopArr[b].getRank() == first.getRank() ||
+                        flopArr[b].getRank() == second.getRank()) {
+                            continue;
+                        } else {
+                            if (tableP) {
+                                for (int v = d; v > b; v--) {
+                                    if (flopArr[v] == flopArr[b]) {
+                                        tableTrips = true;
+                                        tableP = false;
+                                    } else {
+                                        tableTwoP = true;
+                                        tableP = false;
+                                    }
+                                }
+                            } else {
+                                tableP = true;
+                            }
+                        }
+                    }
+                }
+            }
+
                 int firstP = 0;
                 int secondP = 0;
+
                 //Check for pair or two pair
                 int size = flop.size();
                 for (int e = 0; e < size; e++) {
@@ -210,6 +231,24 @@ public class Game {
 
                 }
 
+            //Check for combos with pairs/trips already on the table
+            if (player.isTrips() && tableTrips || player.isTrips() && tableP ||
+                player.isTrips() && tableTwoP) {
+                player.setFullHouse(true);
+            } else if (player.isTwoPair() && tableTrips) {
+                player.setFullHouse(true);
+            } else if (player.isPair() && tableTrips) {
+                player.setFullHouse(true);
+            } else if (player.isPair() && tableP || player.isPair() && tableTwoP) {
+                player.setTwoPair(true);
+            } else if (player.isHighCard() && tableTrips) {
+                player.setTrips(true);
+            } else if (player.isHighCard() && tableTwoP) {
+                player.setTwoPair(true);
+            } else if (player.isHighCard() && tableP) {
+                player.setPair(true);
+            }
+
             //Print out hand
             if (player.isRoyalFlush()) {
                 player.setBestHand("Royal Flush");
@@ -245,4 +284,8 @@ public class Game {
     }
 
     public static ArrayList<Player> getPlayers() { return players; }
+
+    public Dealer getDealer() {
+        return dealer;
+    }
 }

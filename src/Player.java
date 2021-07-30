@@ -19,7 +19,7 @@ public class Player {
     private String bestHand = "High Card";
     private int high;
     private int low;
-    private Card top;
+    private ArrayList<Card> top = new ArrayList<>(5);
 
     public Player(String name, int buyin) {
         hand = new ArrayList<>(2);
