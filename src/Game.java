@@ -112,6 +112,8 @@ public class Game {
                                 if (player.getTop()[1].getRank() > first.getRank()) {
                                     player.getTop()[2] = player.getTop()[1];
                                     player.getTop()[1] = first;
+                                } else {
+                                    player.getTop()[2] = first;
                                 }
                             } else {
                                 player.getTop()[1] = first;
@@ -168,6 +170,8 @@ public class Game {
                                 if (player.getTop()[1].getRank() > second.getRank()) {
                                     player.getTop()[2] = player.getTop()[1];
                                     player.getTop()[1] = second;
+                                } else {
+                                    player.getTop()[2] = second;
                                 }
                             } else {
                                 player.getTop()[1] = second;
@@ -232,6 +236,8 @@ public class Game {
                             player.getTop()[2] = player.getTop()[1];
                             player.getTop()[1] = first;
                         }
+                    } else {
+                        player.getTop()[1] = first;
                     }
                 }
 
@@ -375,7 +381,7 @@ public class Game {
                                     min = k;
                                 }
                             } catch (Exception e) {
-                                System.out.println("null error");
+
                             }
                         }
                         Card temp = flushOrder[min];
@@ -505,22 +511,31 @@ public class Game {
 //        }
 
         if (playerRankings.size() == 1) {
-            System.out.println(playerRankings.get(0).getName() + " wins!");
+            //System.out.println(playerRankings.get(0).getName() + " wins!");
         } else {
-            Player currWinner = playerRankings.get(0);
+           // Player currWinner = playerRankings.get(0);
            // for (Player player : playerRankings)
                 //if (player.getTop()[high].getRank() > currWinner.getTop()[high].getRank()) {
                  //   currWinner = player;
                 //}
            // System.out.println(currWinner.getName() + " wins!");
         }
-        for (Player player : playerRankings) {
-            try {
-                System.out.println(Arrays.toString(player.getTop()));
-            } catch (Exception e) {
-                System.out.println("error");
+//        for (Player player : playerRankings) {
+//            try {
+//                System.out.println(Arrays.toString(player.getTop()));
+//            } catch (Exception e) {
+//                System.out.println("error");
+//            }
+//        }
+
+        Player currWinner = playerRankings.get(0);
+        for (int i = 0; i < playerRankings.size(); i++) {
+            Player curr = playerRankings.get(i);
+            if (curr.getTop()[high].getRank() > currWinner.getTop()[high].getRank()) {
+                currWinner = curr;
             }
         }
+        System.out.println(currWinner.getName() + " wins!");
     }
 
     public static void main(String[] args) {
